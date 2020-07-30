@@ -19,6 +19,7 @@ function Data = processDrifterFiles(inputFile,varargin)
 % minSpeed - minimum speed (cm/s) considered valid; anything below this
 %   in original drifter data will be excluded from processing (default: 0.5
 %   cm/s)
+% maxGap - maximum time gap (hours) between points (default: 12 hours)
 
 app = mfilename;
 
@@ -31,6 +32,7 @@ toNc=false;
 timeInterval=60;
 qcRemove=[3,4];
 ctdAvail=false;
+maxGap=12;
 
 for x = 1:2:length(varargin)
     name = varargin{x};
@@ -94,7 +96,7 @@ for x = 1:2:length(varargin)
             end
             qcRemove = value;
         case 'ctdincluded'
-            if ~islogical(value)&numel(value)~=1
+            if ~islogical(value)|numel(value)~=1
                 fprintf(2,...
                     '%s: Value for option %s must be a single logical.\n',...
                     app,...
@@ -102,6 +104,15 @@ for x = 1:2:length(varargin)
                 return;
             end
             ctdAvail = value;
+        case 'maxgap'
+            if ~isnumeric(value)|numel(value)~=1
+                fprintf(2,...
+                    '%s: Value for option %s must be a single numeric.\n',...
+                    app,...
+                    name);
+                return;
+            end
+            maxGap = value;
     end
 end
 
@@ -123,7 +134,7 @@ else
         if(length(qcRemove)>2)
             removaltext=[removaltext ','];
         end
-        if(n==lengt(qcRemove))
+        if(n==length(qcRemove))
             removaltext=[removaltext ' or'];
         end
         removaltext=[removaltext ' ' flags{qcRemove(n)+1,2}];
@@ -196,14 +207,14 @@ lat=lat(ind);
 % get distance between measurements
 DI = distance(lat(1:end-1),lon(1:end-1),lat(2:end),lon(2:end));
 DI = deg2km(DI)*100000;
-% convert to speed
+% get time difference between measurements
 T = diff(dtime)*24*60*60;
 % remove any over max threshold
-ind=find(DI./T>error_cutoff_max|DI./T<error_cutoff_min);
+ind=find(DI./T>error_cutoff_max|DI./T<error_cutoff_min|T>maxGap*60*60);
 ind = union(ind, ind+1);  %Extraneous point crude bugfix 5/25/2007
-lon(ind)=[];
-lat(ind)=[];
-dtime(ind)=[];
+lon(ind)=NaN;%[];
+lat(ind)=NaN;%[];
+dtime(ind)=NaN;%[];
 
 % get distance on cleaned dataset
 DI = distance(lat(1:end-1),lon(1:end-1),lat(2:end),lon(2:end));
@@ -225,11 +236,22 @@ Data.time_orig = (dtime(1:end-1) + dtime(2:end))/2;
 Data.interval = (dtime(2:end) - dtime(1:end-1));
 
 % interpolate
+ind=find(~isnan(Data.u));
 Data.time=time_interp;
-Data.lon=interp1(Data.time_orig,Data.lon,Data.time);
-Data.lat=interp1(Data.time_orig,Data.lat,Data.time);
-Data.u=interp1(Data.time_orig,Data.u,Data.time);
-Data.v=interp1(Data.time_orig,Data.v,Data.time);
+Data.lon=interp1(Data.time_orig(ind),Data.lon(ind),Data.time);
+Data.lat=interp1(Data.time_orig(ind),Data.lat(ind),Data.time);
+Data.u=interp1(Data.time_orig(ind),Data.u(ind),Data.time);
+Data.v=interp1(Data.time_orig(ind),Data.v(ind),Data.time);
+diffT=diff(Data.time_orig(ind));
+ind2=find(diffT>timeInterval*2);
+for i=1:length(ind2)
+    x=Data.time>Data.time_orig(ind(ind2(i)))+timeInterval/2&...
+        Data.time<Data.time_orig(ind(ind2(i)+1))-timeInterval/2;
+    Data.lon(x)=nan;
+    Data.lat(x)=nan;
+    Data.u(x)=nan;
+    Data.v(x)=nan;
+end
 
 % interpolate the rest
 for n=3:length(vars)
@@ -242,6 +264,13 @@ for n=3:length(vars)
         dtime=(dtime(1:end-1) + dtime(2:end))/2;
         v=(v(1:end-1)+v(2:end))/2;
         Data.(vars{n})=interp1(dtime,v,Data.time);
+        diffT=diff(dtime);
+        ind2=find(diffT>timeInterval*3/60/24);
+        for i=1:length(ind2)
+            x=Data.time>Data.time_orig(ind(ind2(i)))+timeInterval/2&...
+                Data.time<Data.time_orig(ind(ind2(i)+1))-timeInterval/2;
+            Data.(vars{n})(x)=nan;
+        end
     else
         Data.(vars{n})=nan(size(Data.time));
     end
