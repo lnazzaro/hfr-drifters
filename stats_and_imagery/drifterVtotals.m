@@ -343,7 +343,7 @@ for k=1:nFigs
     feather(drifterStruct.u(ind),drifterStruct.v(ind),'k')
     hold on
     plot([1 length(ind)],[0 0],'color',[.5 .5 .5])
-    iticks=ismember(drifterStruct.time(ind),tticks);
+    iticks=ismember(round(drifterStruct.time(ind)*24),round(tticks*24));
     iticklabels=datestr(drifterStruct.time(ind(iticks)),tformat);
     set(gca,'xtick',find(iticks),'xticklabel',iticklabels,'xminortick','on')
     grid(gca,'minor')
@@ -359,7 +359,7 @@ for k=1:nFigs
         feather(totalsStructs{n}.HFR_totals_u(ind),totalsStructs{n}.HFR_totals_v(ind),'k')
         hold on
         plot([1 length(ind)],[0 0],'color',[.5 .5 .5])
-        iticks=ismember(totalsStructs{n}.time(ind),tticks);
+        iticks=ismember(round(totalsStructs{n}.time(ind)*24),round(tticks*24));
         iticklabels=datestr(totalsStructs{n}.time(ind(iticks)),tformat);
         set(gca,'xtick',find(iticks),'xticklabel',iticklabels,'xminortick','on')
         grid(gca,'minor')
