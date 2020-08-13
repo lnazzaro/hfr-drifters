@@ -152,8 +152,8 @@ for n=1:length(radialStructs)
         radialStructs{n}.time>=t0 & radialStructs{n}.time<=t1;
     stats(n).N=sum(ind);
     stats(n).RMSE=sqrt(sum((radialStructs{n}.HFR_radial_velocity(ind)-...
-        radialStructs{n}.rotated_drifter_velocity(ind)*100).^2)/sum(ind));
-    c=corrcoef(radialStructs{n}.rotated_drifter_velocity(ind)*100,...
+        radialStructs{n}.rotated_drifter_velocity(ind)).^2)/sum(ind));
+    c=corrcoef(radialStructs{n}.rotated_drifter_velocity(ind),...
         radialStructs{n}.HFR_radial_velocity(ind));
     stats(n).r=c(2);
 end
@@ -274,7 +274,7 @@ for n=1:length(radialStructs)
     c_hfr=colors{n};
     cd=1-c_hfr;
     c_drifter=c_hfr+.75*cd;
-    plot(radialStructs{n}.time,radialStructs{n}.rotated_drifter_velocity*100,'col',c_drifter,'marker','.','linewidth',1.5)
+    plot(radialStructs{n}.time,radialStructs{n}.rotated_drifter_velocity,'col',c_drifter,'marker','.','linewidth',1.5)
     plot(radialStructs{n}.time,radialStructs{n}.HFR_radial_velocity,'col',c_hfr,'marker','.')
     legnames=[legnames,{['Drifter ' names{n}]},{['HFR ' names{n}]}];
 end
