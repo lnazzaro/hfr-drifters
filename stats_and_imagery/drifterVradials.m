@@ -169,7 +169,7 @@ if t1-t0<3
     tint=.5;
     tformat='mm/dd HH';
 elseif t1-t0<8
-    tint=1
+    tint=1;
 else
     tint=ceil((t1-t0)/8);
 end
