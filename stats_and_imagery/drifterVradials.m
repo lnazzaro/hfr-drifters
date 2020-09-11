@@ -1,5 +1,43 @@
 function stats=drifterVradials(radialStructs,varargin)
 
+% input:
+% radialStructs - single structured array or cell array containing multiple
+%       structured arrays of HFR radial velocities and matching drifter
+%       velocities (rotated), as output from one or multiple iterations of 
+%       drifter2hfr.m; each should be only one dataset 
+%       (ie radialSpeeds.LOVE.measured, etc)
+%
+% output:
+% stats - structured array with statistics for each dataset, including
+%       number of comparison points (N), RMSE, and correlation
+%       coefficient (r)
+% images include map of drifter track (if drifter variable provided as
+%       input) and line plot with all radial velocities and matching
+%       drifter velocities in lighter shades
+%
+% varargin options:
+% plot - logical indicating whether or not to generate plots (default:
+%       true)
+% names - cell array of names for each radial dataset input (defaults to
+%       #1, #2, etc)
+% colors - cell array of colors to use in line plots for each radial 
+%       dataset (defaults to blue, red, black, green), in order, can be
+%       matlab color strings or rgb values
+% t0 - start time
+% t1 - end time
+% drifter - structured array with drifter data; only needed if you want to
+%       plot the drifter track
+% bathymetryFile - netcdf file with lon, lat, altitude (only used for
+%       drifter track plot)
+% bathymetryDir - directory containing bathymetry netcdf files holding lon,
+%       lat, altitude; file names should contain lower left and upper right
+%       domain bounds and resolution, as in 
+%       GMRTv3_6_20190703_LL_76W_38N_UR_72W_42N_res_244m.grd
+%       (ignored if bathymetryFile is provided, only used for drifter track
+%       plot)
+% isobaths - isobaths to plot with drifter track (only used for
+%       drifter track plot)
+
 app = mfilename;
 
 if ~iscell(radialStructs)
@@ -274,7 +312,7 @@ for n=1:length(radialStructs)
     c_hfr=colors{n};
     cd=1-c_hfr;
     c_drifter=c_hfr+.75*cd;
-    plot(radialStructs{n}.time,radialStructs{n}.rotated_drifter_velocity,'col',c_drifter,'marker','.','linewidth',1.5)
+    plot(radialStructs{n}.time,radialStructs{n}.rotated_drifter_velocity,'col',c_drifter,'marker','.','linewidth',2)
     plot(radialStructs{n}.time,radialStructs{n}.HFR_radial_velocity,'col',c_hfr,'marker','.')
     legnames=[legnames,{['Drifter ' names{n}]},{['HFR ' names{n}]}];
 end

@@ -1,5 +1,12 @@
 function Data = processDrifterFiles(inputFile,varargin)
 
+% input:
+% inputFile - netcdf file with raw lon, lat, time
+%
+% output:
+% Data - data structure with processed time, lon, lat, u, v, settings used
+%       in processing
+%
 % varargin options:
 % timeInterval - minutes (default: 60 minutes)
 % qcRemove - array with flags to be excluded (0:no_qc_performed 1:good_data
@@ -17,8 +24,7 @@ function Data = processDrifterFiles(inputFile,varargin)
 %   in original drifter data will be excluded from processing (default: 300
 %   cm/s)
 % minSpeed - minimum speed (cm/s) considered valid; anything below this
-%   in original drifter data will be excluded from processing (default: 0.5
-%   cm/s)
+%   in original drifter data will be excluded from processing (default: eps)
 % maxGap - maximum time gap (hours) between points (default: 12 hours)
 
 app = mfilename;
@@ -26,7 +32,7 @@ app = mfilename;
 [~,fName,~]=fileparts(inputFile);
 
 error_cutoff_max=300;
-error_cutoff_min=0.5;
+error_cutoff_min=eps;
 outputDir='';
 toNc=false;
 timeInterval=60;
@@ -277,8 +283,15 @@ for n=3:length(vars)
 end
 Data.vars=vars;
 
+Data.attributes.max_speed=error_cutoff_max;
+Data.attributes.min_speed=error_cutoff_min;
+Data.attributes.ncFile=nan;
+Data.attributes.timeIntervalMinutes=timeInterval*24*60;
+Data.attributes.qcFlagsRemoved=qcRemove;
+
 % write to nc
 if(toNc)
+    Data.attributes.ncFile=outFile;
     ncwrite(outFile,'time',(Data.time-datenum(1970,1,1))*24*60*60);
     ncwrite(outFile,'time_qc',8*ones(size(Data.time)));
 

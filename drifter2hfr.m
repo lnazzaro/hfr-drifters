@@ -1,6 +1,23 @@
 function [drifterVelocities, radialSpeeds, totalsVelocities] = ...
-    drifter2codar(processedDrifterData,varargin)
+    drifter2hfr(processedDrifterData,varargin)
 
+% input:
+% processedDrifterData - netcdf file with processed time, lon, lat, u, v OR 
+%       structured array output from processDrifterFiles.m, at timestamps
+%       matching HFR data
+%
+% output:
+% drifterVelocities - structured array with processed drifter data (time,
+%       lon, lat, u, v) and u,v units
+% radialSpeeds - structured array with information on settings used and
+%       nearest HFR velocity and drifter velocity rotated based on radial
+%       bearing, as well as any other associated radial data for all radial
+%       datasets (as radialSpeeds.SITE.type)
+% totalsVelocities  -structured array with information on settings used and
+%       HFR totals u and v matched to drifter velocities as in 
+%       drifterVelocities, as well as any other associated data for all 
+%       totals datasets (as totalsVelocities.totals)
+%
 % radialSites: cell array of radial site codes to compare drifter to (or
 %       'all' for all within range or 'none' (default: all)
 % radialType: measured, ideal, or both (default: both)
