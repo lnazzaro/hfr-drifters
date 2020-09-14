@@ -22,7 +22,7 @@ function [drifterVelocities, radialSpeeds, totalsVelocities] = ...
 %       'all' for all within range or 'none' (default: all)
 % radialType: measured, ideal, or both (default: both)
 % totalsNetworks: which totals network(s) to compare to or 'all' or 'none'
-%       (only applicable if using thredds; default: all)
+%       (only applicable if using thredds; default: none)
 % radialDir: directory to pull radial data from; should have subdirectories
 %       for each site code (default: /home/codaradm/data/radials/)
 % totalsDir: directory with totals files to compare to, or 'thredds'
@@ -49,7 +49,7 @@ app = mfilename;
 
 
 radialSites={'all'};
-totalsNetworks={'all'};
+totalsNetworks={'none'};
 radialDir='/home/codaradm/data/radials/';
 totalsDir='thredds';
 radialType='both';
