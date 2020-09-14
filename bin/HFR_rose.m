@@ -414,6 +414,9 @@ if nargout>=2
   varargout{2}=E;
 end
 
+set(gca,'color','w')
+set(gcf,'color','w')
+
 function place_wr(ax,ax2,x,y,width)
 if nargin < 5
   width=1/5;
