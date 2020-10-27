@@ -24,7 +24,7 @@ function varargout = HFR_rose(D,F,varargin)
 %       -legtype, legend type: 1, continuous, 2, separated boxes [2]
 %       -bcolor, full rectangle border color ['none']
 %       -lcolor, line colors for axes and circles ['k']
-%       -percbg, percentage labels bg ['w']
+%       -percbg, percentage labels bg ['none']
 %       -ax, to place wind rose on pervious axes, the input for ax
 %            must be [theax x y width], where theax is the previous
 %            axes, x and y are the location and width is the wind
@@ -93,7 +93,7 @@ nAngles=36;
 ri=1/30;
 quad=1;
 legType=2;
-percBg='w';
+percBg='none';
 titStr='';
 legStr='';
 cmap=jet;
@@ -288,9 +288,9 @@ for i=1:ncircles
   circles(i)=plot(x,y,':','color',lineColors);
   handles(end+1)=circles(i);
 
-%   labs(i)=text((ci(i)+ri)*cos(Ang(quad)),(ci(i)+ri)*sin(Ang(quad)),[num2str(ci(i)),'%'],...
-%       'VerticalAlignment',Valign{quad},'HorizontalAlignment',Halign{quad},...
-%       'BackgroundColor',percBg,'FontSize',8);
+  labs(i)=text((ci(i)+ri)*cos(Ang(quad)),(ci(i)+ri)*sin(Ang(quad)),[num2str(ci(i)),'%'],...
+      'VerticalAlignment',Valign{quad},'HorizontalAlignment',Halign{quad},...
+      'BackgroundColor',percBg,'FontSize',10,'FontWeight','bold');
 end
 handles=[handles labs];
 

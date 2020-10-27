@@ -283,6 +283,7 @@ for n=3:length(vars)
 end
 Data.vars=vars;
 
+Data.attributes.rawDataFile=inputFile;
 Data.attributes.max_speed=error_cutoff_max;
 Data.attributes.min_speed=error_cutoff_min;
 Data.attributes.ncFile=nan;

@@ -18,6 +18,7 @@ function [drifterVelocities, radialSpeeds, totalsVelocities] = ...
 %       drifterVelocities, as well as any other associated data for all 
 %       totals datasets (as totalsVelocities.totals)
 %
+% options:
 % radialSites: cell array of radial site codes to compare drifter to (or
 %       'all' for all within range or 'none' (default: all)
 % radialType: measured, ideal, or both (default: both)
@@ -43,6 +44,8 @@ function [drifterVelocities, radialSpeeds, totalsVelocities] = ...
 %       {'u_err>0.6','v_err>0.6'}
 % radialsToRemove: QC rules indicating radial vectors to remove as cell 
 %       array (default: {'VFLG>0'}); must use 4-character column names
+% dateFormat: formatter string indicating format of date in files 
+%       (default: 'yyyy_mm_dd_HHMM')
 
 
 app = mfilename;
@@ -60,6 +63,7 @@ maxSeparation=10;
 totalsComparisonMethod='weightedgaussian';
 totalsToRemove={'u_err>0.6','v_err>0.6'};
 radialsToRemove={'VFLG>0'};
+dtfmt='yyyy_mm_dd_HHMM';
 
 totalsMethodOptions={'nearest','mean','median',...
     'weightedgaussian','weightedexponential',...
@@ -170,7 +174,10 @@ for x = 1:2:length(varargin)
             end
             totalsComparisonMethod = value;
         case 'totalstoremove'
-            if ~ischar(value)
+            if ~iscell(value)
+                value={value};
+            end
+            if ~all(cellfun(@ischar,value))
                 fprintf(2,...
                     '%s: Value for option %s must be a string indicating expression to use for bad totals to remove before matching.\n',...
                     app,...
@@ -179,7 +186,10 @@ for x = 1:2:length(varargin)
             end
             totalsToRemove = value;
         case 'radialstoremove'
-            if ~ischar(value)
+            if ~iscell(value)
+                value={value};
+            end
+            if ~all(cellfun(@ischar,value))
                 fprintf(2,...
                     '%s: Value for option %s must be a string indicating expression to use for bad radials to remove before matching.\n',...
                     app,...
@@ -187,6 +197,15 @@ for x = 1:2:length(varargin)
                 return;
             end
             radialsToRemove = value;
+        case 'dateformat'
+            if ~ischar(value)
+                fprintf(2,...
+                    '%s: Value for option %s must be a date formatting string.\n',...
+                    app,...
+                    name);
+                return;
+            end
+            dtfmt = value;
         otherwise
             fprintf(2,...
                 '%s: Invalid option specified: %s.\n',...
@@ -309,11 +328,11 @@ if ~strcmp(lower(radialType),'none')
                 t=time(ti);
                 if isdir([radialDir site datestr(t,'/yyyy_mm/')])
                     radialFile=dir([radialDir, site, datestr(t,'/yyyy_mm/'),...
-                        'RDLm_' site '_' datestr(t,'yyyy_mm_dd_HH00') '*']);
+                        'RDLm_' site '_' datestr(t,dtfmt) '*']);
                     radialDirTemp=[radialDir, site, datestr(t,'/yyyy_mm/')];
                 else
                     radialFile=dir([radialDir, site, ...
-                        'RDLm_' site '_' datestr(t,'yyyy_mm_dd_HH00') '*']);
+                        'RDLm_' site '_' datestr(t,dtfmt) '*']);
                     radialDirTemp=[radialDir, site];
                 end
                 if ~isempty(radialFile)
@@ -354,11 +373,11 @@ if ~strcmp(lower(radialType),'none')
                 t=time(ti);
                 if isdir([radialDir site datestr(t,'/yyyy_mm/')])
                     radialFile=dir([radialDir, site, datestr(t,'/yyyy_mm/'),...
-                        'RDLi_' site '_' datestr(t,'yyyy_mm_dd_HH00') '*']);
+                        'RDLi_' site '_' datestr(t,dtfmt) '*']);
                     radialDirTemp=[radialDir, site, datestr(t,'/yyyy_mm/')];
                 else
                     radialFile=dir([radialDir, site, ...
-                        'RDLi_' site '_' datestr(t,'yyyy_mm_dd_HH00') '*']);
+                        'RDLi_' site '_' datestr(t,dtfmt) '*']);
                     radialDirTemp=[radialDir, site];
                 end
                 if ~isempty(radialFile)
@@ -390,7 +409,7 @@ if ~strcmp(lower(radialType),'none')
     end
 end
 
-if ~strcmp(totalsNetworks{1},'none')
+if ~strcmp(totalsNetworks{1},'none')|~strcmp(totalsDir,'thredds')
     if strcmp(totalsComparisonMethod,'nearest')
         sx=maxSeparation;
         sy=maxSeparation;
@@ -434,11 +453,11 @@ if ~strcmp(totalsNetworks{1},'none')
             disp(['totals ' datestr(t)])
             if isdir([totalsDir datestr(t,'yyyy_mm/')])
                 totalsFile=dir([totalsDir, datestr(t,'yyyy_mm/'),...
-                    '*' datestr(t,'yyyy_mm_dd_HH00') '*.nc']);
+                    '*' datestr(t,dtfmt) '*.nc']);
                 totalsDirTemp=[totalsDir, datestr(t,'yyyy_mm/')];
             else
                 totalsFile=dir([totalsDir, ...
-                    '*' datestr(t,'yyyy_mm_dd_HH00') '*.nc']);
+                    '*' datestr(t,dtfmt) '*.nc']);
                 totalsDirTemp=totalsDir;
             end
             if isempty(totalsFile)
