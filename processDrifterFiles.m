@@ -310,3 +310,6 @@ if(toNc)
     end
 end
 
+Data.u=Data.u*100;
+Data.v=Data.v*100;
+Data.units='cm/s';

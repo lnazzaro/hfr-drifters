@@ -60,13 +60,23 @@ t1=max(radialStructs{1}.time(ind));
 for n=2:length(radialStructs)
     ind=~isnan(radialStructs{n}.rotated_drifter_velocity) & ...
         ~isnan(radialStructs{n}.HFR_radial_velocity);
-    t0=min(t0,min(radialStructs{n}.time(ind)));
-    t1=max(t1,max(radialStructs{n}.time(ind)));
+    if(sum(ind)>0)
+        t0=nanmin(t0,min(radialStructs{n}.time(ind)));
+        t1=nanmax(t1,max(radialStructs{n}.time(ind)));
+    end
 end
 drifter=struct([]);
 bathyDir=[];
 bathyFile=[];
 isobaths=[-20,-50,-100];
+
+if(isempty(t0)|isempty(t1))
+    fprintf(2,...
+        '%s: No non-NaN data in file.\n',...
+        app);
+    return;
+end
+    
 
 for x = 1:2:length(varargin)
     name = varargin{x};

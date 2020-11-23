@@ -81,8 +81,9 @@ if ~isempty(DI)
         eval(['closestRadial.HFR_radial_', add_fields{k}, ...
             '=', add_fields{k} '(ind_closest);'])
     end
-    closestRadial.rotated_drifter_velocity=-rot(drifteru,drifterv,...
+    [~,rotvel]=rot(drifteru,drifterv,...
         closestRadial.HFR_radial_BEAR);
+    closestRadial.rotated_drifter_velocity=-rotvel;
 end
 
     

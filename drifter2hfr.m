@@ -231,9 +231,9 @@ elseif isstruct(processedDrifterData)
     time=drifterVelocities.time;
     lon=drifterVelocities.lon;
     lat=drifterVelocities.lat;
-    drifterVelocities.u=drifterVelocities.u*100;
-    drifterVelocities.v=drifterVelocities.v*100;
-    drifterVelocities.units='cm/s';
+    drifterVelocities.u=drifterVelocities.u;%*100;
+    drifterVelocities.v=drifterVelocities.v;%*100;
+    %drifterVelocities.units='cm/s';
 else
     fprintf(2,...
         '%s: first input to function must be a netcdf file containing processed drifter data or a structured array as output from processDrifterFiles.m.\n',...

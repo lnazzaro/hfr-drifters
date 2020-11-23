@@ -73,8 +73,10 @@ t1=max(drifterStruct.time(ind));
 for n=1:length(totalsStructs)
     ind=~isnan(totalsStructs{n}.HFR_totals_u) & ...
         ~isnan(totalsStructs{n}.HFR_totals_v);
-    t0=min(t0,min(totalsStructs{n}.time(ind)));
-    t1=max(t1,max(totalsStructs{n}.time(ind)));
+    if(sum(ind)>0)
+        t0=nanmin(t0,min(totalsStructs{n}.time(ind)));
+        t1=nanmax(t1,max(totalsStructs{n}.time(ind)));
+    end
 end
 bathyDir=[];
 bathyFile=[];
@@ -239,7 +241,7 @@ end
 for n=1:length(totalsStructs)
     stats(n).name=names{n};
     indTotals=find(~isnan(totalsStructs{n}.HFR_totals_u) & ...
-        ~isnan(totalsStructs{n}.HFR_totals_u) & ...
+        ~isnan(totalsStructs{n}.HFR_totals_v) & ...
         totalsStructs{n}.time>=t0 & totalsStructs{n}.time<=t1);
     indDrifter=find(~isnan(drifterStruct.u) & ...
         ~isnan(drifterStruct.v) & ...
@@ -399,15 +401,27 @@ for n=1:length(totalsStructs)
     speedInt=ceil(max([max(speedD),max(speedHFR)])/7);
     
     subplot(1,3,1)
-    HFR_rose(dirD,speedD,'dtype','meteo','di',0:speedInt:speedInt*7,'n',32,'parent',gca);
+    if(sum(indD)==0)
+        text(1,1,'n/a')
+    else
+        HFR_rose(dirD,speedD,'dtype','meteo','di',0:speedInt:speedInt*7,'n',32,'parent',gca);
+    end
     title('Drifter')
     
     subplot(1,3,2)
-    HFR_rose(dirHFR,speedHFR,'dtype','meteo','di',0:speedInt:speedInt*7,'n',32,'parent',gca);
+    if(sum(indHFR)==0)
+        text(1,1,'n/a')
+    else
+        HFR_rose(dirHFR,speedHFR,'dtype','meteo','di',0:speedInt:speedInt*7,'n',32,'parent',gca);
+    end
     title(names{n})
     
     subplot(1,3,3)
-    HFR_rose(dirHFR-dirD,speedHFR-speedD,'dtype','meteo','nsewlabel','meteo','n',32,'parent',gca);
+    if(sum(indD)==0)
+        text(1,1,'n/a')
+    else
+        HFR_rose(dirHFR-dirD,speedHFR-speedD,'dtype','meteo','nsewlabel','meteo','n',32,'parent',gca);
+    end
     title([names{n} ' minus Drifter'])
     
     figureinfo=[figureinfo,{['current_rose_drifter_vs_' names{n}]}];
