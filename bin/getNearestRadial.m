@@ -82,7 +82,7 @@ if ~isempty(DI)
             '=', add_fields{k} '(ind_closest);'])
     end
     [~,rotvel]=rot(drifteru,drifterv,...
-        closestRadial.HFR_radial_BEAR);
+        closestRadial.HFR_radial_HEAD+180);
     closestRadial.rotated_drifter_velocity=-rotvel;
 end
 

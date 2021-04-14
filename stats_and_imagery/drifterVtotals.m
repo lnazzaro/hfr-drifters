@@ -74,8 +74,8 @@ for n=1:length(totalsStructs)
     ind=~isnan(totalsStructs{n}.HFR_totals_u) & ...
         ~isnan(totalsStructs{n}.HFR_totals_v);
     if(sum(ind)>0)
-        t0=nanmin(t0,min(totalsStructs{n}.time(ind)));
-        t1=nanmax(t1,max(totalsStructs{n}.time(ind)));
+        t0=nanmin([t0,min(totalsStructs{n}.time(ind))]);
+        t1=nanmax([t1,max(totalsStructs{n}.time(ind))]);
     end
 end
 bathyDir=[];
@@ -152,7 +152,15 @@ for x = 1:2:length(varargin)
                     name);
                 return;
             end
-            t0=value;
+            if value<t0
+                warning('%s: Value for %s is before earliest drifter data; setting to %s (earliest drifter data).\n',...
+                    app, name, datestr(t0))
+            elseif value>t1
+                warning('%s: Value for %s is after latest drifter data; setting to %s (earliest drifter data).\n',...
+                    app, name, datestr(t0))
+            else
+                t0=value;
+            end
         case 't1'
             if ~isnumeric(value)|value<datenum(1995,1,1)|value>now+10
                 fprintf(2,...
@@ -161,7 +169,15 @@ for x = 1:2:length(varargin)
                     name);
                 return;
             end
-            t1=value;
+            if value>t1
+                warning('%s: Value for %s is after latest drifter data; setting to %s (latest drifter data).\n',...
+                    app, name, datestr(t1))
+            elseif value<t0
+                warning('%s: Value for %s is before earliest drifter data; setting to %s (latest drifter data).\n',...
+                    app, name, datestr(t1))
+            else
+                t1=value;
+            end
         case 'bathymetrydir'
             if ~isdir(value)
                 fprintf(2,...

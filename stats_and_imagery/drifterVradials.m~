@@ -361,8 +361,8 @@ elseif strncmp(plotType,'subplot',7)
     nPlots=length(radialStructs);
 end
 
-ymin=0;
-ymax=0;
+ymin=-1;
+ymax=1;
 
 for n=1:length(radialStructs)
     if strcmp(plotType,'single')
@@ -396,7 +396,7 @@ end
 
 for n=1:nPlots
     subplot(nPlots,1,n)
-    ylim([ymin-5 ymax+5])
+    ylim([ymin ymax])
     set(gca,'xtick',t0tick:tint:t1tick,'xticklabel',datestr(t0tick:tint:t1tick,tformat))
     grid on
     xlim([t0 t1])
@@ -407,8 +407,8 @@ hold on
 
 legnames={};
 
-ymin=0;
-ymax=0;
+ymin=-5;
+ymax=5;
 
 for n=1:length(radialStructs)
     if strcmp(plotType,'single')
@@ -441,7 +441,7 @@ end
 
 for n=1:nPlots
     subplot(nPlots,1,n)
-    ylim([ymin-5 ymax+5])
+    ylim([ymin ymax])
     set(gca,'xtick',t0tick:tint:t1tick,'xticklabel',datestr(t0tick:tint:t1tick,tformat))
     grid on
     xlim([t0 t1])
@@ -467,11 +467,6 @@ for n=1:length(radialStructs)
         lplot=[plot(axlim,mby,'k','linewidth',1.5,'linestyle','--'),...
             plot(axlim,axlim,'r','linewidth',1.5,'linestyle',':')];
         legend(lplot,{'Best-Fit','1:1'})
-        xlabel('Drifter Velocity Component')
-        ylabel('HFR Velocity Component')
-        title(names{n})
-    else
-        text(.5,.5,'No Data')
         xlabel('Drifter Velocity Component')
         ylabel('HFR Velocity Component')
         title(names{n})

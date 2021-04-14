@@ -321,18 +321,18 @@ if ~strcmp(lower(radialType),'none')
                 [radialSpeeds.attributes.radials_excluded, 'or', ...
                 radialsToRemove{ra}];
         end
-        if ismember(lower(radialType),{'both','measured','rdlm'})
+        if ismember(lower(radialType),{'both','measured','rdlm','eltm'})
             type='measured';
             radialSpeeds.(site).(type).time=time;
             for ti=1:length(time)
                 t=time(ti);
                 if isdir([radialDir site datestr(t,'/yyyy_mm/')])
                     radialFile=dir([radialDir, site, datestr(t,'/yyyy_mm/'),...
-                        'RDLm_' site '_' datestr(t,dtfmt) '*']);
+                        '*m_' site '_' datestr(t,dtfmt) '*']);
                     radialDirTemp=[radialDir, site, datestr(t,'/yyyy_mm/')];
                 else
                     radialFile=dir([radialDir, site, ...
-                        'RDLm_' site '_' datestr(t,dtfmt) '*']);
+                        '*m_' site '_' datestr(t,dtfmt) '*']);
                     radialDirTemp=[radialDir, site];
                 end
                 if ~isempty(radialFile)
@@ -366,18 +366,18 @@ if ~strcmp(lower(radialType),'none')
             end
         end
         
-        if ismember(lower(radialType),{'both','ideal','rdli'})
+        if ismember(lower(radialType),{'both','ideal','rdli','elti'})
             type='ideal';
             radialSpeeds.(site).(type).time=time;
             for ti=1:length(time)
                 t=time(ti);
                 if isdir([radialDir site datestr(t,'/yyyy_mm/')])
                     radialFile=dir([radialDir, site, datestr(t,'/yyyy_mm/'),...
-                        'RDLi_' site '_' datestr(t,dtfmt) '*']);
+                        '*i_' site '_' datestr(t,dtfmt) '*']);
                     radialDirTemp=[radialDir, site, datestr(t,'/yyyy_mm/')];
                 else
                     radialFile=dir([radialDir, site, ...
-                        'RDLi_' site '_' datestr(t,dtfmt) '*']);
+                        '*i_' site '_' datestr(t,dtfmt) '*']);
                     radialDirTemp=[radialDir, site];
                 end
                 if ~isempty(radialFile)
